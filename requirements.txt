@@ -1,3 +1,5 @@
 nltk==3.8.1
 PyMuPDF==1.21.1
 camelot-py==0.11.0
+opencv-python==4.7.0.72
+ghostscript==0.7

@@ -1,6 +1,7 @@
 import re
 
 from nlp.pre_process import clean_text
+from settings import config
 
 def extract_json_values(json_obj, result_str):
     """
@@ -24,6 +25,15 @@ def extract_json_values(json_obj, result_str):
     return ' '.join(result_str).lower()
 
 
+def extract_text_elements(elements, element_valid):
+    result = []
+    for element in elements:
+        if 'text' in element and element_valid(element):
+            result.append(element['text'])
+
+    return ' '.join(result)
+
+
 def cleanse_and_tag_json_structure(data):
     """
     Evaluate a JSON data structure for invalid content and tag it with validity information.
@@ -45,7 +55,7 @@ def cleanse_and_tag_json_structure(data):
             # If the value is a string
             if isinstance(value, str):
                 # Check if the string contains any invalid content
-                if test_for_invalid_content(value):
+                if test_for_invalid_content(value, config.invalid_content_regexs):
                     # If the string contains invalid content, tag the entire data structure as invalid
                     data["valid"] = False
                 else:
@@ -66,7 +76,7 @@ def cleanse_and_tag_json_structure(data):
             # If the list item is a string
             if isinstance(value, str):
                 # Check if the string contains any invalid content
-                if test_for_invalid_content(value):
+                if test_for_invalid_content(value, config.invalid_content_regexs):
                     # If the string contains invalid content, tag the entire data structure as invalid
                     data["valid"] = False
                 else:
@@ -77,7 +87,7 @@ def cleanse_and_tag_json_structure(data):
                 cleanse_and_tag_json_structure(value)
 
 
-def test_for_invalid_content(text, regex_list):
+def test_for_invalid_content(text, regex_list=[]):
     """
     Check if a string contains any invalid content based on a list of regex statements.
 

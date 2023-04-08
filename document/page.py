@@ -1,4 +1,5 @@
-import camelot, fitz
+import camelot
+import fitz
 
 def extract_tables(file):
     """
@@ -23,7 +24,7 @@ def extract_lines(filename, tables):
     """
 
     # Create an empty list to store the extracted lines
-    lines = []
+    line_elements = []
 
     # Open the PDF document
     with fitz.open(filename) as doc:
@@ -37,6 +38,9 @@ def extract_lines(filename, tables):
         # Get the text blocks on the page
         blocks = page.get_text('dict')
         
+        # collect all lines into a set
+        all_lines = set()
+
         # Remove lines contained in tables
         for block in blocks['blocks']:
             if 'lines' in block:
@@ -50,7 +54,8 @@ def extract_lines(filename, tables):
                     # Check if the line is contained in a table
                     if not any(table.contains(line, page_height, page_width) for table in tables):
                         # Add the line to the list of extracted lines
-                        lines.append({
+                        all_lines.add(line['spans'][0]['text'])
+                        line_elements.append({
                             'text': line['spans'][0]['text'],
                             'valid': True,
                             'bbox': line['bbox'],
@@ -61,8 +66,9 @@ def extract_lines(filename, tables):
                             },
                         })
     
+
     # Sort the lines by y-coordinate and then x-coordinate
-    sorted_lines = sorted(lines, key=lambda line: (-line['bbox'][3], line['bbox'][0]))
+    sorted_elements = sorted(line_elements, key=lambda line: (-line['bbox'][3], line['bbox'][0]))
 
     # Return the sorted lines
-    return sorted_lines
+    return sorted_elements, all_lines

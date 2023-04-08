@@ -1,17 +1,18 @@
 import json
 import shutil
-import config, os
-from models import Table
-from exceptions import DocumentProcessingError, PageProcessingError
+import os
+from models.table import Table
 from nlp.pre_process import clean_text
-from utils import split_document_pages
+from .utils import split_document_pages
+from settings import config
 from concurrent.futures import ThreadPoolExecutor
-from document.page import extract_lines, extract_tables
-from json_utils import cleanse_and_tag_json_structure, extract_json_values
-from utils import split_document_pages
+from .page import extract_lines, extract_tables
+from utils.json_utils import cleanse_and_tag_json_structure, extract_json_values
+from exceptions import DocumentProcessingError, PageProcessingError
+from .utils import split_document_pages
 
 
-def process_document(file, pages=None, extracted_files_output_dir=None, use_multithreading=False, delete_split_pages=True):
+def process_document(file: str, exclude_pages=None, extracted_files_output_dir=None, use_multithreading=False, delete_split_pages=True):
     """
     Process a document by splitting it into pages and processing each page individually.
 
@@ -36,7 +37,8 @@ def process_document(file, pages=None, extracted_files_output_dir=None, use_mult
 
     try:
         # Split the input document into individual pages
-        target_dir, files = split_document_pages(file, extracted_files_output_dir)
+        target_dir, files = split_document_pages(
+            file, extracted_files_output_dir)
 
         # Process each page in the document
         if use_multithreading:
@@ -44,8 +46,9 @@ def process_document(file, pages=None, extracted_files_output_dir=None, use_mult
             with ThreadPoolExecutor() as executor:
                 futures = []
                 for i, file_path in enumerate(files):
-                    if pages is None or i+1 in pages:
-                        futures.append(executor.submit(process_page, file_path, i+1))
+                    if exclude_pages is None or i+1 not in exclude_pages:
+                        futures.append(executor.submit(
+                            process_page, file_path, i+1))
 
                 # Wait for all threads to complete and collect the results
                 for future in futures:
@@ -53,7 +56,7 @@ def process_document(file, pages=None, extracted_files_output_dir=None, use_mult
         else:
             # If multi-threading is disabled, process each page sequentially in the main thread
             for i, file_path in enumerate(files):
-                if pages is None or i+1 in pages:
+                if exclude_pages is None or i+1 in exclude_pages:
                     result['pages'].append(process_page(file_path, i+1))
 
         # Sort the pages list by page number
@@ -68,8 +71,7 @@ def process_document(file, pages=None, extracted_files_output_dir=None, use_mult
     return result
 
 
-
-def process_page(path, index):
+def process_page(file_path, index):
     """
     Process a PDF page and extract data from tables and lines.
 
@@ -88,26 +90,27 @@ def process_page(path, index):
     data = {}
 
     # Print a message to the console indicating that the processing has started
-    print(f'starting {path}')
+    print(f'starting {file_path}')
 
     # Check if the file type is supported
     if os.path.splitext(file_path)[1] in config.supported_file_types:
-        print(f'processing {path}')
+        print(f'processing {file_path}')
 
         # Create the full file path
-        file_path = os.path.join(os.path.dirname(path), path)
+        #file_path = path if not os.path.isabs(path) else os.path.join(os.path.dirname(path), path)
 
         # Check if the file exists
         if not os.path.exists(file_path):
-            raise PageProcessingError(f'File {path} does not exist')  
-        
+            raise PageProcessingError(f'File {file_path} does not exist')
+
         try:
             # Extract tables from the PDF page
             raw_tables = extract_tables(file_path)
 
             # Extract lines from the PDF page
-            lines = extract_lines(path, [Table(table._bbox) for table in raw_tables])
-            
+            lines, training_data = extract_lines(file_path, [Table(table._bbox)
+                                  for table in raw_tables])
+
             # Cleanse and tag the lines JSON structure
             cleanse_and_tag_json_structure(lines)
 
@@ -121,14 +124,17 @@ def process_page(path, index):
                     'sections': lines,  # todo - extract sections
                     'tables': tables,
                     'images': [],
+                    'classification_training_data': clean_text(training_data, remove_punctuation=True),
                     # 'kvps': []
                 }
             }
-            
+
             return data
         except Exception as e:
             # Raise an error if an exception occurs while processing the page
-            raise PageProcessingError(f'Error processing page {index} of {path}: {e}')  
+            raise PageProcessingError(
+                f'Error processing page {index} of {file_path}: {e}')
+
 
 def get_table_data(tables):
     """
@@ -146,21 +152,21 @@ def get_table_data(tables):
             - 'data': A string containing the cleaned data extracted from the table.
     """
     result_tables = []
-    
-    for idx in range(len(tables)):   
+
+    for idx in range(len(tables)):
         jsonString = tables[idx].df.to_json(orient='records')
         jsonData = json.loads(jsonString)
-        
+
         cleanse_and_tag_json_structure(jsonData)
         dataValue = extract_json_values(jsonData, [])
-        
-        cleaned = clean_text(dataValue)
-        
+
+        cleaned = clean_text(dataValue, remove_punctuation=True)
+
         table = {
             'valid': True,
             'table': idx,
             'json': jsonData,
-            'data': cleaned
+            'classification_training_data': cleaned
         }
 
         result_tables.append(table)

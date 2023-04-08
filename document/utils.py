@@ -1,4 +1,4 @@
-import config
+import settings.config as config
 import os
 import fitz
 

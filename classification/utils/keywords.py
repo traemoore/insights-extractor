@@ -1,4 +1,7 @@
+from settings import config
+
 keywords = {}
+keywords.update(config.keywords)
 
 def get_keywords():
     """
