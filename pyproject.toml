@@ -11,7 +11,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "t-extractlib"
-version = "0.0.6"
+version = "0.0.7"
 authors = [
   { name="Trae Moore", email="trae.dev@gmail.com" },
 ]

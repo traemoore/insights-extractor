@@ -5,3 +5,4 @@ __pycache__/
 *temp.*
 .vscode/
 twine.txt
+extractlib.config.json
