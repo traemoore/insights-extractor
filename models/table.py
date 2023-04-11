@@ -1,6 +1,7 @@
 class Table:
-    def __init__(self, bbox):
+    def __init__(self, bbox, order):
         self.bbox = bbox
+        self.order = order
 
     def contains(self, line, page_height, page_width):
         # get the bbox for the table

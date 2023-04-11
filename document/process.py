@@ -1,15 +1,16 @@
 import json
 import shutil
 import os
-from models.table import Table
-from nlp.pre_process import clean_text
-from .utils import split_document_pages
-from settings import config
 from concurrent.futures import ThreadPoolExecutor
-from .page import extract_lines, extract_tables
-from utils.json_utils import cleanse_and_tag_json_structure, extract_json_values
-from exceptions import DocumentProcessingError, PageProcessingError
+
 from .utils import split_document_pages
+from .page import extract_lines, extract_tables, get_images
+from .table import corrilate_table_data, get_table_data
+from .utils import split_document_pages
+from models.table import Table
+from settings import config
+from utils.json_utils import cleanse_and_tag_json_structure
+from exceptions import DocumentProcessingError, PageProcessingError
 
 
 def process_document(file: str, exclude_pages=None, extracted_files_output_dir=None, use_multithreading=False, delete_split_pages=True):
@@ -39,30 +40,30 @@ def process_document(file: str, exclude_pages=None, extracted_files_output_dir=N
         # Split the input document into individual pages
         target_dir, files = split_document_pages(
             file, extracted_files_output_dir)
-
-        # Process each page in the document
-        if use_multithreading:
-            # If multi-threading is enabled, process each page in a separate thread
-            with ThreadPoolExecutor() as executor:
-                futures = []
-                for i, file_path in enumerate(files):
-                    if exclude_pages is None or i+1 not in exclude_pages:
-                        futures.append(executor.submit(
-                            process_page, file_path, i+1))
-
-                # Wait for all threads to complete and collect the results
-                for future in futures:
-                    result['pages'].append(future.result())
-        else:
-            # If multi-threading is disabled, process each page sequentially in the main thread
-            for i, file_path in enumerate(files):
-                if exclude_pages is None or i+1 in exclude_pages:
-                    result['pages'].append(process_page(file_path, i+1))
-
-        # Sort the pages list by page number
-        result['pages'] = sorted(result['pages'], key=lambda x: x['page'])
     except Exception as e:
         raise DocumentProcessingError(f'Error processing document {file}: {e}')
+    
+    # Process each page in the document
+    if use_multithreading:
+        # If multi-threading is enabled, process each page in a separate thread
+        with ThreadPoolExecutor() as executor:
+            futures = []
+            for i, file_path in enumerate(files):
+                if exclude_pages is None or i+1 not in exclude_pages:
+                    futures.append(executor.submit(
+                        process_page, file_path, i+1))
+
+            # Wait for all threads to complete and collect the results
+            for future in futures:
+                result['pages'].append(future.result())
+        
+            # Sort the pages list by page number
+        result['pages'] = sorted(result['pages'], key=lambda x: x['page'])
+    else:
+        # If multi-threading is disabled, process each page sequentially in the main thread
+        for i, file_path in enumerate(files):
+            if exclude_pages is None or i+1 not in exclude_pages:
+                result['pages'].append(process_page(file_path, i+1))
 
     # Delete the extracted pages if the delete_extracted_pages flag is set
     if delete_split_pages:
@@ -106,16 +107,19 @@ def process_page(file_path, index):
         try:
             # Extract tables from the PDF page
             raw_tables = extract_tables(file_path)
+                        # Extract data from the tables
+            tables = get_table_data(raw_tables)
 
             # Extract lines from the PDF page
-            lines, training_data = extract_lines(file_path, [Table(table._bbox)
+            lines, table_lines = extract_lines(file_path, [Table(table._bbox, table.order)
                                   for table in raw_tables])
+
+            tables = corrilate_table_data(table_lines, tables)
 
             # Cleanse and tag the lines JSON structure
             cleanse_and_tag_json_structure(lines)
 
-            # Extract data from the tables
-            tables = get_table_data(raw_tables)
+            images = get_images(file_path)
 
             # Store the extracted data in the dictionary
             data = {
@@ -123,8 +127,8 @@ def process_page(file_path, index):
                 'content': {
                     'sections': lines,  # todo - extract sections
                     'tables': tables,
-                    'images': [],
-                    'classification_training_data': clean_text(training_data, remove_punctuation=True),
+                    'images': images,
+                    # 'classification_training_data': "" #clean_text(training_data, remove_punctuation=True),
                     # 'kvps': []
                 }
             }
@@ -134,40 +138,3 @@ def process_page(file_path, index):
             # Raise an error if an exception occurs while processing the page
             raise PageProcessingError(
                 f'Error processing page {index} of {file_path}: {e}')
-
-
-def get_table_data(tables):
-    """
-    Extract and clean data from a list of PyMuPDF table objects.
-
-    Args:
-        tables (list): A list of PyMuPDF table objects to extract data from.
-
-    Returns:
-        list: A list of dictionaries containing cleaned data and metadata for each table.
-            Each dictionary has the following keys:
-            - 'valid': A boolean indicating whether the data is valid or not.
-            - 'table': An integer identifying the table.
-            - 'json': A list of dictionaries containing the raw data extracted from the table.
-            - 'data': A string containing the cleaned data extracted from the table.
-    """
-    result_tables = []
-
-    for idx in range(len(tables)):
-        jsonString = tables[idx].df.to_json(orient='records')
-        jsonData = json.loads(jsonString)
-
-        cleanse_and_tag_json_structure(jsonData)
-        dataValue = extract_json_values(jsonData, [])
-
-        cleaned = clean_text(dataValue, remove_punctuation=True)
-
-        table = {
-            'valid': True,
-            'table': idx,
-            'json': jsonData,
-            'classification_training_data': cleaned
-        }
-
-        result_tables.append(table)
-    return result_tables
