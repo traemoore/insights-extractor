@@ -3,4 +3,5 @@ _tempdata
 __pycache__/
 *test.py
 *temp.*
-main.py
+.vscode/
+twine.txt

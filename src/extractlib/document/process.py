@@ -7,10 +7,10 @@ from .utils import split_document_pages
 from .page import extract_lines, extract_tables, get_images
 from .table import corrilate_table_data, get_table_data
 from .utils import split_document_pages
-from models.table import Table
-from settings import config
-from utils.json_utils import cleanse_and_tag_json_structure
-from exceptions import DocumentProcessingError, PageProcessingError
+from ..models.table import Table
+from ..settings import config
+from ..utils.json_utils import cleanse_and_tag_json_structure
+from ..exceptions import DocumentProcessingError, PageProcessingError
 
 
 def process_document(file: str, exclude_pages=None, extracted_files_output_dir=None, use_multithreading=False, delete_split_pages=True):

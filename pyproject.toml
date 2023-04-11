@@ -1,0 +1,29 @@
+[build-system]
+requires = [
+  "setuptools>=61.0",
+  "nltk==3.8.1",
+  "PyMuPDF==1.21.1",
+  "camelot-py==0.11.0",
+  "opencv-python==4.7.0.72",
+  "ghostscript==0.7"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "t-extractlib"
+version = "0.0.6"
+authors = [
+  { name="Trae Moore", email="trae.dev@gmail.com" },
+]
+description = "A package standardized for extracting data from PDFs"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/traemoore/extractlib"
+"Bug Tracker" = "https://github.com/traemoore/extractlib/issues"

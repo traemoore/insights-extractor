@@ -1,7 +1,6 @@
 import json
-from nlp.pre_process import clean_text
-
-from utils.json_utils import cleanse_and_tag_json_structure, extract_json_values
+from ..nlp.pre_process import clean_text
+from ..utils.json_utils import cleanse_and_tag_json_structure, extract_json_values
 
 
 def corrilate_table_data(table_elements, table_data):

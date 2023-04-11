@@ -1,7 +1,7 @@
 import re
 
-from nlp.pre_process import clean_text
-from settings import config
+from ..nlp.pre_process import clean_text
+from ..settings import config
 
 def extract_json_values(json_obj, result_str):
     """

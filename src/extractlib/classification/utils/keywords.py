@@ -1,4 +1,4 @@
-from settings import config
+from ...settings import config
 
 keywords = {}
 keywords.update(config.keywords)

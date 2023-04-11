@@ -2,7 +2,7 @@ import re
 import string
 from collections import Counter
 from nltk.tokenize import word_tokenize
-from nlp.stopwords import get_words
+from ..nlp.stopwords import get_words
 
 from settings import config
 
