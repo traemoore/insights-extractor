@@ -63,9 +63,9 @@ $ brew install ghostscript tcl-tk
 }
 
 # access config variables
-from extractlib import config_settings
+from extractlib.settings import config
 
-print(json.dump(config_settings, indent=4))
+print(json.dump(config.config_raw, indent=4))
 
 # Example implementation
 
