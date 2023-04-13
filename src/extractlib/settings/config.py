@@ -1,7 +1,7 @@
 import json
 
 std_out_logging = True
-supported_file_types = []
+supported_file_types = [".pdf"],
 invalid_content_regexs = []
 stop_words = []
 keywords = {}

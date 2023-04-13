@@ -13,15 +13,15 @@ from ..utils.json_utils import cleanse_and_tag_json_structure
 from ..exceptions import DocumentProcessingError, PageProcessingError
 
 
-def process_document(file: str, exclude_pages=None, extracted_files_output_dir=None, use_multithreading=False, delete_split_pages=True):
+def process_document(file: str, exclude_pages=None, use_multithreading=False,  split_pages_output_dir=None, delete_split_pages=True):
     """
     Process a document by splitting it into pages and processing each page individually.
 
     Args:
         file (str): The path to the input document file.
         pages (list): A list of page numbers to exclude (non-zero based index). If None, all pages are processed (default=None).
-        extracted_files_output_dir (str): The path to the directory where extracted pages should be saved (default=None).
         use_multithreading (bool): Whether to use multi-threading to process the pages (default=False).
+        split_pages_output_dir (str): The path to the directory where extracted pages should be saved (default=None).
         delete_split_pages (bool): Whether to delete the split pages after processing (default=True).
 
     Returns:
@@ -39,7 +39,7 @@ def process_document(file: str, exclude_pages=None, extracted_files_output_dir=N
     try:
         # Split the input document into individual pages
         target_dir, files = split_document_pages(
-            file, extracted_files_output_dir)
+            file, split_pages_output_dir)
     except Exception as e:
         raise DocumentProcessingError(f'Error processing document {file}: {e}')
     
