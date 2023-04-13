@@ -4,18 +4,19 @@ This is a Python package that provides a set of tools and utilities for processi
 
 
 ## python dependency overview
-- pip install nltk==3.8.1 PyMuPDF==1.21.1 camelot-py==0.11.0 opencv-python==4.7.0.72 ghostscript==0.7
+### Python Dependency Install
+<pre>pip install nltk==3.8.1 PyMuPDF==1.21.1 camelot-py==0.11.0 opencv-python==4.7.0.72 ghostscript==0.7</pre>
 
-#### manually install supporting binaries
+## manually install supporting binaries
 
 ### camelot dependencies
 - https://camelot-py.readthedocs.io/en/master/user/install-deps.html#install-deps
 
 #### Ubuntu
-$ apt install ghostscript python3-tk
+<pre>$ apt install ghostscript python3-tk</pre>
 
 #### MacOS
-$ brew install ghostscript tcl-tk
+<pre>$ brew install ghostscript tcl-tk</pre>
 
 ## windows dependency installations
 - Install ghostscript: https://ghostscript.com/releases/gsdnld.html
@@ -27,7 +28,6 @@ $ brew install ghostscript tcl-tk
 ## Example 'extractlib.config.json' File
 ### this file should be located in the root of your project
 <pre>
-```json
 {
   "std_out_logging": true,
   "supported_file_types": [".pdf"],
@@ -63,7 +63,6 @@ $ brew install ghostscript tcl-tk
   },
   "word_min_length": 3
 }
-```
 </pre>
 
 # access config variables
