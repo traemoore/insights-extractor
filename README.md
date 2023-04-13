@@ -26,6 +26,8 @@ $ brew install ghostscript tcl-tk
 
 ## Example 'extractlib.config.json' File
 ### this file should be located in the root of your project
+<pre>
+```json
 {
   "std_out_logging": true,
   "supported_file_types": [".pdf"],
@@ -61,6 +63,8 @@ $ brew install ghostscript tcl-tk
   },
   "word_min_length": 3
 }
+```
+</pre>
 
 # access config variables
 from extractlib.settings import config
