@@ -53,6 +53,7 @@ def corrilate_table_data(table_elements, table_data):
                         
                         # Remove the line from table_elements and append it to the corresponding table in tables
                         element = table_elements.pop(line_idx)
+                        del element['table']
                         tables[tbl_idx].append(element)
 
                         # If the column ends with the line text, increment the column index and break the loop
