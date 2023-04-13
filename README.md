@@ -66,12 +66,13 @@ This is a Python package that provides a set of tools and utilities for processi
 </pre>
 
 # access config variables
+<pre>
 from extractlib.settings import config
 
 print(json.dump(config.config_raw, indent=4))
-
+</pre>
 # Example implementation
-
+<pre>
 from extractlib.document.process import process_document
 import json
 
@@ -88,3 +89,4 @@ if __name__ == '__main__':
     import os
     target_dir = os.path.dirname(os.path.abspath(__file__))
     main(f'{target_dir}/_testdata/PDF.pdf')
+</pre>
