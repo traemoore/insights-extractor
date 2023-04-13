@@ -3,79 +3,237 @@ from ..nlp.pre_process import clean_text
 from ..utils.json_utils import cleanse_and_tag_json_structure, extract_json_values
 
 
+
 def corrilate_table_data(table_elements, table_data):
-    """
-    This function correlates the input table elements with their respective table data
-    by finding the row and column for each element in the table_data.
-    
-    Parameters:
-    table_elements (list): A list of dictionaries, where each dictionary represents a line of data with a 'table' key.
-    table_data (list): A list of dictionaries, where each dictionary represents the structure of a table with a 'json' key.
-
-    Returns:
-    list: A list of updated table_data dictionaries with the correlated table elements.
-    """
-
-    # Initialize an empty dictionary to store tables and a search context dictionary to store search positions
+    # Initialize an empty dictionary to store tables
     tables = {}
-    search_context = {}
-
-    # Iterate through each line in table_elements
-    for line in table_elements:
-        # Set initial search context for the table
-        search_context[line['table']] = {'row': 0, 'column': 0}
-
-        tbl_idx = line['table']
+    
+    # Iterate through each table in table_data
+    tbl_idx = 0
+    while tbl_idx < len(table_data):
         table = table_data[tbl_idx]
-        found = False
 
-        # Iterate through the rows starting from the last searched row
-        for idx in range(search_context[line['table']]['row'], len(table['json'])):
-            # Reset the column search position if moving to a new row
-            search_context[line['table']]['column'] = 0 if idx > search_context[line['table']]['row'] else search_context[line['table']]['column']
-            
-            row = table['json'][idx]
+        # Iterate through each row in the table's JSON data
+        row_idx = 0
+        while row_idx < len(table['json']):
+            row = table['json'][row_idx]
 
-            # Iterate through the columns starting from the last searched column
-            for col_idx in range(search_context[line['table']]['column'], len(row)):
-                # Check if the column exists in the row
-                if not f'{col_idx}' in row:
-                    break
-                
+            # Iterate through each column in the row
+            col_idx = 0
+            while col_idx < len(row):
                 col = row[f'{col_idx}']
-
+                
+                # If the column is empty, increment the column index and continue to the next column
                 if not col:
+                    col_idx += 1
                     continue
+                
+                ends_column = False
 
-                # Check if the line text is in the column text
-                if line['text'] in col:
-                    line['row'] = idx
-                    line['column'] = col_idx
-                    search_context[line['table']]['row'] = idx
-                    search_context[line['table']]['column'] = col_idx+1 if col.endswith(line['text']) else col_idx
-                    found = True
-                    break
+                # Iterate through each line in table_elements
+                line_idx = 0
+                while line_idx < len(table_elements):
+                    line = table_elements[line_idx]
+                    
+                    # If the line text is empty, remove the line and continue to the next line
+                    if not line['text'].strip():
+                        table_elements.pop(line_idx)
+                        continue
+                    
+                    # If the line text is found in the column or _col_contains_line_text returns a positive value
+                    if line['text'] in col or _col_contains_line_text(col, line['text']) > -1:
+                        ends_column = col.endswith(line['text'])
+                        
+                        # Update the line with its row and column information
+                        line.update({'row': row_idx, 'column': col_idx})
+                        
+                        # If the table index is not in the tables dictionary, create a new empty list for the table index
+                        if tbl_idx not in tables:
+                            tables[tbl_idx] = []
+                        
+                        # Remove the line from table_elements and append it to the corresponding table in tables
+                        element = table_elements.pop(line_idx)
+                        tables[tbl_idx].append(element)
 
-            # Stop searching the current table if the element is found
-            if found:
-                break
+                        # If the column ends with the line text, increment the column index and break the loop
+                        if ends_column:
+                            col_idx += 1
+                            break
+                        continue
+                    else:
+                        col_idx += 1
+                        break
 
-        # Initialize an empty list for the table index if it's not in the tables dictionary
-        if tbl_idx not in tables:
-            tables[tbl_idx] = []
+            # Increment the row index
+            row_idx += 1
 
-        # Remove the 'table' key from the line dictionary
-        del line['table']
+        # If there are no more elements with 'table': 0, increment the table index
+        if not any(element.get('table') == 0 for element in table_elements):
+            tbl_idx += 1
+    
+    # Sort the elements in each table by their row and column values
+    sorted_tables = {key: sorted(tables[key], key=lambda x: (x['row'], x['column'])) for key in tables}
+    
+    # Return the sorted tables if table_elements is empty, otherwise return None
+    return sorted_tables if not any(table_elements) else None
 
-        # Append the modified line dictionary to the list corresponding to its table index
-        tables[tbl_idx].append(line)
         
-    for idx in range(len(table_data)):
-        table_data[idx]['json'] = tables[idx]
 
-    # Convert the tables dictionary to a list of tuples (table index, list of rows)
-    return table_data
+# def corrilate_table_data(table_elements, table_data):
+#     # Initialize an empty dictionary to store tables
+#     tables = {}
+#     search_context = {}
 
+#     # Iterate through each line in table_data using index-based loop
+#     i = 0
+#     while i < len(table_elements):
+#         line = table_elements[i]
+
+#         if not line['text'].strip():
+#             i += 1
+#             continue
+
+#         if not line['table'] in tables:
+#             search_context[line['table']] = {'row': 0, 'column': 0}
+
+#         tbl_idx = line['table']
+#         table = table_data[tbl_idx]
+#         found = False
+#         moved = False
+#         idx = search_context[line['table']]['row']
+#         while idx < len(table['json']):
+#             idx = search_context[line['table']]['row'] if idx < search_context[line['table']]['row'] else idx
+#             search_context[line['table']]['column'] = 0 if idx > search_context[line['table']]['row'] else search_context[line['table']]['column']
+#             row = table['json'][idx]
+
+#             col_idx = search_context[line['table']]['column']
+#             while col_idx < len(row):
+#                 col_idx = search_context[line['table']]['column'] if col_idx < search_context[line['table']]['column'] else col_idx
+
+#                 if not f'{col_idx}' in row:
+#                     break
+
+#                 col = row[f'{col_idx}']
+
+#                 if not col:
+#                     col_idx += 1
+#                     continue
+
+#                 if line['text'] in col or _col_contains_line_text(col, line['text']) > -1:
+#                     line.update({'row': idx, 'column': col_idx})
+#                     search_context[line['table']]['row'] = idx
+#                     search_context[line['table']]['column'] = col_idx + 1 if col.endswith(line['text']) else col_idx
+#                     found = True
+#                     break
+#                 else:
+#                     element = table_elements.pop(i)
+#                     table_elements.insert(i+2, element)
+#                     moved = True
+
+#             if found:
+#                 idx += 1
+#                 break
+            
+
+#         table_idx = line['table']
+
+#         if table_idx not in tables:
+#             tables[table_idx] = []
+
+#         del line['table']
+
+#         tables[table_idx].append(line)
+#         i += 1
+
+#     result = [(key, tables[key]) for key in tables]
+
+#     return result
+
+
+
+# def corrilate_table_data(table_elements, table_data):
+#     """
+#     This function groups the input table elements by their table indices and finds the row and column for each element.
+    
+#     Parameters:
+#     table_elements (list): A list of dictionaries, where each dictionary represents a line of data with a 'table' key.
+#     table_data (list): A list of dictionaries, where each dictionary represents the structure of a table with a 'json' key.
+
+#     Returns:
+#     list: A list of tuples, where each tuple contains a table index and a list of corresponding rows with their row and column information.
+#     """
+
+#     # Initialize an empty dictionary to store tables
+#     tables = {}
+#     search_context = {}
+    
+#     # Iterate through each line in table_data
+#     for line in table_elements:
+        
+#         if not line['text'].strip():
+#             continue
+
+#         if not line['table'] in tables:
+#             search_context[line['table']] = {'row': 0, 'column': 0}
+
+#         tbl_idx = line['table']
+#         table = table_data[tbl_idx]
+#         found = False
+#         for idx in range(search_context[line['table']]['row'], len(table['json'])):
+#             idx = search_context[line['table']]['row'] if idx < search_context[line['table']]['row'] else idx
+#             search_context[line['table']]['column'] = 0 if idx > search_context[line['table']]['row'] else search_context[line['table']]['column']
+            
+#             row = table['json'][idx]
+
+#             for col_idx in range(len(row)):
+#                 col_idx = search_context[line['table']]['column'] if col_idx < search_context[line['table']]['column'] else col_idx
+                
+#                 if not f'{col_idx}' in row:
+#                     break
+                
+#                 col = row[f'{col_idx}']
+
+#                 if not col:
+#                     continue
+
+#                 if line['text'] in col or _col_contains_line_text(col, line['text']) > -1:
+#                     line.update({'row': idx, 'column': col_idx})
+#                     search_context[line['table']]['row'] = idx
+#                     search_context[line['table']]['column'] = col_idx+1 if col.endswith(line['text']) else col_idx
+#                     found = True
+#                     break
+#                 else:
+
+                    
+
+#             if found:
+#                 break
+
+#         # Get the table index from the line
+#         table_idx = line['table']
+
+#         # If the table index is not in the tables dictionary, create a new empty list for the table index
+#         if table_idx not in tables:
+#             tables[table_idx] = []
+
+#         # Remove the 'table' key from the line dictionary
+#         del line['table']
+
+#         # Append the modified line dictionary to the list corresponding to its table index
+#         tables[table_idx].append(line)
+
+#     # Convert the tables dictionary to a list of tuples (table index, list of rows)
+#     result = [(key, tables[key]) for key in tables]
+
+#     # Return the list of tuples
+#     return result
+
+
+def _col_contains_line_text(col, line_text):
+    try:
+        return col.index(line_text.strip())
+    except Exception:
+        return -1
 
 def get_table_data(tables):
     """
@@ -112,3 +270,9 @@ def get_table_data(tables):
 
         result_tables.append(table)
     return result_tables
+
+def _col_contains_target(col, target):
+    try:
+        return col.index(target)
+    except Exception:
+        return -1

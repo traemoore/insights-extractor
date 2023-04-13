@@ -33,6 +33,8 @@ def process_document(file: str, exclude_pages=None, use_multithreading=False,  s
     Raises: DocumentProcessingError if an error occurs while processing the document.
     """
     result = {
+        'document_name': os.path.basename(file),
+        'excluded_pages': exclude_pages if exclude_pages is not None else None,
         'pages': []
     }
 
@@ -93,8 +95,10 @@ def process_page(file_path, index):
     # Print a message to the console indicating that the processing has started
     print(f'starting {file_path}')
 
+    file_ext = os.path.splitext(file_path)[1].lower()
+
     # Check if the file type is supported
-    if os.path.splitext(file_path)[1] in config.supported_file_types:
+    if file_ext in config.supported_file_types:
         print(f'processing {file_path}')
 
         # Create the full file path

@@ -1,32 +1,36 @@
 import json
 
 std_out_logging = True
-supported_file_types = [".pdf"],
+supported_file_types: list[str] = ['.pdf'],
 invalid_content_regexs = []
 stop_words = []
 keywords = {}
 keyword_synonyms = { }
 word_min_length = 3
+config_raw = None
 
 
-def read_config_file():
+if not config_raw:
     with open('extractlib.config.json', 'r') as f:
-        config = json.load(f)
+        config_raw = json.load(f)
 
-    std_out_logging = config.get('std_out_logging', True)
-    supported_file_types = config.get('supported_file_types', [])
-    invalid_content_regexs = config.get('invalid_content_regexs', [])
-    stop_words = config.get('stop_words', [])
-    keywords = config.get('keywords', {})
-    keyword_synonyms = config.get('keyword_synonyms', {})
-    word_min_length = config.get('word_min_length', 0)
+        if "std_out_logging" in config_raw:
+            std_out_logging = config_raw['std_out_logging']
+        
+        if 'supported_file_types' in config_raw:
+            supported_file_types = config_raw['supported_file_types']
 
-    return {
-        'std_out_logging': std_out_logging,
-        'supported_file_types': supported_file_types,
-        'invalid_content_regexs': invalid_content_regexs,
-        'stop_words': stop_words,
-        'keywords': keywords,
-        'keyword_synonyms': keyword_synonyms,
-        'word_min_length': word_min_length
-    }
+        if 'invalid_content_regexs' in config_raw:
+            invalid_content_regexs = config_raw['invalid_content_regexs']
+
+        if 'stop_words' in config_raw:
+            stop_words = config_raw['stop_words']
+
+        if 'keywords' in config_raw:
+            keywords = config_raw['keywords']
+
+        if 'keyword_synonyms' in config_raw:
+            keyword_synonyms = config_raw['keyword_synonyms']
+
+        if 'word_min_length' in config_raw:
+            word_min_length = config_raw['word_min_length']

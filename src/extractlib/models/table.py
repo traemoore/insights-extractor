@@ -3,7 +3,7 @@ class Table:
         self.bbox = bbox
         self.order = order
 
-    def contains(self, line, page_height, page_width):
+    def contains(self, line):
         # get the bbox for the table
         table_x1, table_y2, table_x2, table_y1 = self.bbox
         

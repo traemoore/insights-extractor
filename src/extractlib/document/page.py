@@ -100,7 +100,7 @@ def extract_lines(filename, tables):
                     # Normalize the line bounding box to the page
                     line['bbox'] = (x1, page_height-y2, x2, page_height-y1)
 
-                    table_idx = _in_table(line, tables, page_height, page_width)
+                    table_idx = _in_table(line, tables)
                     # Check if the line is contained in a table
                     collection = page_lines if not table_idx else table_lines
                     
@@ -126,13 +126,14 @@ def extract_lines(filename, tables):
 
     # Sort the lines by y-coordinate and then x-coordinate
     sorted_page_elements = sorted(page_lines, key=lambda line: (-line['bbox'][3], line['bbox'][0]))
-    #sorted_table_elements = sorted(table_lines, key=lambda e: (e['bbox'][3], e['bbox'][0]))
+    # Sort the table_lines by y-coordinate (top to bottom) and then x-coordinate (left to right)
+    #sorted_table_lines = sorted(table_lines, key=lambda line: (-line['bbox'][1], line['bbox'][0]))
 
     # Return the sorted lines
     return sorted_page_elements, table_lines
 
 
-def _in_table(line, tables, page_height, page_width):
+def _in_table(line, tables):
     """
     Check if a line is contained in a table.
 
@@ -144,6 +145,6 @@ def _in_table(line, tables, page_height, page_width):
         bool: True if the line is contained in a table, False otherwise.
     """
     for table in tables:
-        if table.contains(line, page_height, page_width):
+        if table.contains(line):
             return table.order
     return None
