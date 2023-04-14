@@ -6,3 +6,4 @@ __pycache__/
 .vscode/
 twine.txt
 extractlib.config.json
+upload_package.bat
