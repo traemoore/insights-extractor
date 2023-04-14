@@ -10,7 +10,7 @@ dependencies = [
   "opencv-python == 4.7.0.72; python_version >= '3.6'",
   "ghostscript == 0.7; python_version >= '3.6'"
 ]
-name = "insight-extractor"
+name = "insights-extractior"
 version = "0.1.0"
 authors = [
   { name="Trae Moore", email="trae.dev@gmail.com" },
