@@ -11,7 +11,7 @@ dependencies = [
   "ghostscript == 0.7; python_version >= '3.6'"
 ]
 name = "insights-extractor"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
   { name="Trae Moore", email="trae.dev@gmail.com" },
 ]
@@ -26,6 +26,6 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/traemoore/insightextractor"
-"Tests" =  "https://github.com/traemoore/insightextractor-test"
-"Bug Tracker" = "https://github.com/traemoore/insightextractor/issues"
+"Homepage" = "https://github.com/traemoore/insights-extractor"
+"Tests" =  "https://github.com/traemoore/insights-extractor-test"
+"Bug Tracker" = "https://github.com/traemoore/insights-extractor/issues"

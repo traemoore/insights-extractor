@@ -3,9 +3,16 @@
 This is a Python package that provides a set of tools and utilities for processing and analyzing PDF documents. It includes functionality for extracting text and tables from PDFs, cleaning and preprocessing text data, and analyzing content for keywords and patterns. The package also provides a number of configuration options for customizing the behavior of the tools and utilities, making it flexible and easy to use in a variety of different contexts. Whether you need to extract data from PDF documents for data analysis, or analyze PDF content for specific keywords or patterns, this package provides the tools you need to get the job done quickly and efficiently.
 
 
-## python dependency overview
+## Dependency Overview
 ### Python Dependency Install
-<pre>pip install nltk==3.8.1 PyMuPDF==1.21.1 camelot-py==0.11.0 opencv-python==4.7.0.72 ghostscript==0.7</pre>
+This project leverages packages 
+<pre>
+nltk == 3.8.1 
+PyMuPDF == 1.21.1 
+camelot-py == 0.11.0 
+opencv-python == 4.7.0.72 
+ghostscript == 0.7
+</pre>
 
 ## manually install supporting binaries
 
