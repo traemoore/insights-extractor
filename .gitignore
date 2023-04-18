@@ -7,3 +7,4 @@ __pycache__/
 twine.txt
 extractlib.config.json
 upload_package.bat
+extractlib.code-workspace

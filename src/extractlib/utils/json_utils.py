@@ -34,7 +34,7 @@ def extract_text_elements(elements, element_valid):
     return ' '.join(result)
 
 
-def cleanse_and_tag_json_structure(data):
+def cleanse_and_tag_json_structure(data, validation_regexs=[]):
     """
     Evaluate a JSON data structure for invalid content and tag it with validity information.
 
@@ -43,8 +43,9 @@ def cleanse_and_tag_json_structure(data):
 
     Returns: None
 
-    Example: { "valid": true | false, "item1": ..., "item2": ..., ... }
+    Example: { "item1": {"valid" : true | false }, "item1": ..., "item2": ..., ... }
     """
+    regexs = config.invalid_content_regexs if not validation_regexs else list(set(config.invalid_content_regexs + validation_regexs))
 
     # Check if the data is a dictionary
     if isinstance(data, dict):
@@ -55,7 +56,7 @@ def cleanse_and_tag_json_structure(data):
             # If the value is a string
             if isinstance(value, str):
                 # Check if the string contains any invalid content
-                if test_for_invalid_content(value, config.invalid_content_regexs):
+                if test_for_invalid_content(value, regexs):
                     # If the string contains invalid content, tag the entire data structure as invalid
                     data["valid"] = False
                 else:
@@ -63,7 +64,7 @@ def cleanse_and_tag_json_structure(data):
                     data[key] = clean_text(value, False)
             else:
                 # If the value is not a string, recurse into the data structure to cleanse and tag nested values
-                cleanse_and_tag_json_structure(value)
+                cleanse_and_tag_json_structure(value, regexs)
 
         # Remove any keys that were flagged for removal during the loop
         for key in keys_to_remove:
@@ -76,7 +77,7 @@ def cleanse_and_tag_json_structure(data):
             # If the list item is a string
             if isinstance(value, str):
                 # Check if the string contains any invalid content
-                if test_for_invalid_content(value, config.invalid_content_regexs):
+                if test_for_invalid_content(value, regexs):
                     # If the string contains invalid content, tag the entire data structure as invalid
                     data["valid"] = False
                 else:
@@ -84,7 +85,7 @@ def cleanse_and_tag_json_structure(data):
                     data[i] = clean_text(value, False)
             else:
                 # If the list item is not a string, recurse into the data structure to cleanse and tag nested values
-                cleanse_and_tag_json_structure(value)
+                cleanse_and_tag_json_structure(value, regexs)
 
 
 def test_for_invalid_content(text, regex_list=[]):
