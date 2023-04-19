@@ -2,6 +2,7 @@
 LICENSE
 README.md
 pyproject.toml
+.github/workflows/python-publish.yml
 src/extractlib/__init__.py
 src/extractlib/classification/__init__.py
 src/extractlib/classification/prep_utils.py
@@ -23,9 +24,9 @@ src/extractlib/settings/__init__.py
 src/extractlib/settings/config.py
 src/extractlib/utils/json_utils.py
 src/extractlib/utils/temp_dir.py
+src/insights_extractor.egg-info/PKG-INFO
+src/insights_extractor.egg-info/SOURCES.txt
+src/insights_extractor.egg-info/dependency_links.txt
+src/insights_extractor.egg-info/requires.txt
+src/insights_extractor.egg-info/top_level.txt
 src/requirements/requirements.txt
-src/t_extractlib.egg-info/PKG-INFO
-src/t_extractlib.egg-info/SOURCES.txt
-src/t_extractlib.egg-info/dependency_links.txt
-src/t_extractlib.egg-info/requires.txt
-src/t_extractlib.egg-info/top_level.txt

@@ -1,15 +1,16 @@
 Metadata-Version: 2.1
-Name: t-extractlib
-Version: 0.0.11
-Summary: A package standardized for extracting data from PDFs
+Name: insights-extractor
+Version: 0.1.0
+Summary: Efficient PDF analysis, text extraction, preprocessing, and pattern recognition with customizable configurations and utilities.
 Author-email: Trae Moore <trae.dev@gmail.com>
-Project-URL: Homepage, https://github.com/traemoore/extractlib
-Project-URL: Bug Tracker, https://github.com/traemoore/extractlib/issues
-Keywords: nltk,Pymupdf,Camelot,OpenCV,Ghostscript,extractlib,pdf extraction,pdf data extraction,pdf data,classification,keyword extraction
+Project-URL: Homepage, https://github.com/traemoore/insightextractor
+Project-URL: Tests, https://github.com/traemoore/insightextractor-test
+Project-URL: Bug Tracker, https://github.com/traemoore/insightextractor/issues
+Keywords: nltk,Pymupdf,Camelot,OpenCV,Ghostscript,insight-extractor,pdf extraction,pdf data extraction,pdf data,classification,keyword extraction
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
-Requires-Python: >=3.10
+Requires-Python: >=3.7
 Description-Content-Type: text/markdown
 License-File: LICENSE
 

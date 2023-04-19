@@ -1,7 +1,7 @@
 
 [:python_version >= "3.6"]
 camelot-py==0.11.0
-opencv-python
+opencv-python==4.7.0.72
 ghostscript==0.7
 
 [:python_version >= "3.7"]
