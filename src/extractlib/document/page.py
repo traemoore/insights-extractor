@@ -126,8 +126,6 @@ def extract_lines(filename, tables):
 
     # Sort the lines by y-coordinate and then x-coordinate
     sorted_page_elements = sorted(page_lines, key=lambda line: (-line['bbox'][3], line['bbox'][0]))
-    # Sort the table_lines by y-coordinate (top to bottom) and then x-coordinate (left to right)
-    #sorted_table_lines = sorted(table_lines, key=lambda line: (-line['bbox'][1], line['bbox'][0]))
 
     # Return the sorted lines
     return sorted_page_elements, table_lines

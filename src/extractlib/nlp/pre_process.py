@@ -21,9 +21,6 @@ def clean_text(text, remove_punctuation=False, regex_list=None):
     # Remove all new line characters from the text
     text = re.sub('\n', ' ', text)
 
-    # Remove any extra whitespace from the text
-    text = re.sub('\s+', ' ', text).strip()
-
     if remove_punctuation:
         # Remove all punctuation from the text
         text = text.translate(str.maketrans('', '', string.punctuation))
@@ -32,6 +29,9 @@ def clean_text(text, remove_punctuation=False, regex_list=None):
         # Remove any substrings that match a regex pattern
         for pattern in regex_list:
             text = re.sub(pattern, '', text)
+        # Remove any extra whitespace from the text
+
+    text = re.sub('\s+', ' ', text).strip()
 
     # Remove any non-ASCII characters from the text
     text = text.encode('ascii', 'ignore').decode()

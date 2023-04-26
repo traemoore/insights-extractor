@@ -119,7 +119,7 @@ def process_page(file_path, index):
                                   for table in raw_tables])
 
             tables = corrilate_table_data(table_lines, tables)
-
+            print(json.dumps(tables, indent=4))
             # Cleanse and tag the lines JSON structure
             cleanse_and_tag_json_structure(lines)
 

@@ -85,7 +85,7 @@ def extract_classification_text(json_data, validation_regexs=[], stop_words=[]):
         text = extract_text_elements(json_data, lambda x: 'valid' in x and x['valid'] == True)
         text = clean_text(text, True, validation_regexs)
         words = tokenize_content(text, True, stop_words)
-        return ' '.join(words)
+        return clean_text(' '.join(words))
     except Exception as e:
         print(f'Error processing: {e}')
         raise e
