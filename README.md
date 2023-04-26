@@ -8,6 +8,7 @@ This is a Python package that provides a set of tools and utilities for processi
 This project leverages packages 
 <pre>
 nltk == 3.8.1 
+spacy == 3.5.2
 PyMuPDF == 1.21.1 
 camelot-py == 0.11.0 
 opencv-python == 4.7.0.72 
@@ -15,6 +16,9 @@ ghostscript == 0.7
 </pre>
 
 ## manually install supporting binaries
+
+### spacy dependencies
+<pre>python -m spacy download en_core_web_sm</pre>
 
 ### camelot dependencies
 - https://camelot-py.readthedocs.io/en/master/user/install-deps.html#install-deps
