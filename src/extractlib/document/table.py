@@ -120,9 +120,3 @@ def get_table_data(tables):
 
         result_tables.append(table)
     return result_tables
-
-def _col_contains_target(col, target):
-    try:
-        return col.index(target)
-    except Exception:
-        return -1
