@@ -4,6 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 dependencies = [
+  "spacy == 3.5.2; python_version >= '3.7'",
   "nltk == 3.8.1; python_version >= '3.7'",
   "PyMuPDF == 1.21.1; python_version >= '3.7'",
   "camelot-py == 0.11.0; python_version >= '3.6'",
@@ -11,14 +12,14 @@ dependencies = [
   "ghostscript == 0.7; python_version >= '3.6'"
 ]
 name = "insights-extractor"
-version = "0.1.1"
+version = "0.1.2"
 authors = [
   { name="Trae Moore", email="trae.dev@gmail.com" },
 ]
 description = "Efficient PDF analysis, text extraction, preprocessing, and pattern recognition with customizable configurations and utilities."
 readme = "README.md"
 requires-python = ">=3.7"
-keywords = ["nltk", "Pymupdf", "Camelot", "OpenCV", "Ghostscript", "insight-extractor", "pdf extraction", "pdf data extraction", "pdf data", "classification", "keyword extraction"]
+keywords = ["nltk", "spaCy", "Pymupdf", "Camelot", "OpenCV", "Ghostscript", "insight-extractor", "pdf extraction", "pdf data extraction", "pdf data", "classification", "keyword extraction"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

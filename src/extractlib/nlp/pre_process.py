@@ -15,26 +15,25 @@ def clean_text(text, remove_punctuation=False, regex_list=None):
         str: The cleaned text string.
     """
 
-    # Remove all single quotes from the text
-    re.sub(r"'", "", text)
-
-    # Remove all new line characters from the text
-    text = re.sub('\n', ' ', text)
-
-    # Remove any extra whitespace from the text
-    text = re.sub('\s+', ' ', text).strip()
-
-    if remove_punctuation:
-        # Remove all punctuation from the text
-        text = text.translate(str.maketrans('', '', string.punctuation))
-
     if regex_list is not None:
         # Remove any substrings that match a regex pattern
         for pattern in regex_list:
             text = re.sub(pattern, '', text)
 
-    # Remove any non-ASCII characters from the text
-    text = text.encode('ascii', 'ignore').decode()
+    # Remove all single quotes from the text
+    result = re.sub(r"'", "", text)
 
+    # Remove all new line characters from the text
+    result = re.sub('\n', ' ', result)
+
+    if remove_punctuation:
+    # Remove all punctuation from the text
+        result = result.translate(str.maketrans('', '', string.punctuation))
+
+    # Remove any non-ASCII characters from the text
+    result = result.encode('ascii', 'ignore').decode()
+    
+    result = re.sub(r'\s+', ' ', result).strip()
+    result = re.sub(r'\t+', ' ', result).strip()
     # Return the cleaned text string
-    return text
+    return result
