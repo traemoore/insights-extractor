@@ -8,9 +8,6 @@ def corrilate_table_data(table_elements, table_data):
     # Initialize an empty dictionary to store tables
     tables = {}
     
-    if not table_elements or not table_data:
-        raise ValueError('table_elements and table_data cannot be None.')
-
     # Iterate through each table in table_data
     tbl_idx = 0
     while tbl_idx < len(table_data):

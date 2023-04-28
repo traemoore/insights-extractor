@@ -118,8 +118,9 @@ def process_page(file_path, index):
             lines, table_lines = extract_lines(file_path, [Table(table._bbox, table.order)
                                   for table in raw_tables])
 
-            tables = corrilate_table_data(table_lines, tables)
-            print(json.dumps(tables, indent=4))
+            if tables and table_lines:
+                tables = corrilate_table_data(table_lines, tables)
+
             # Cleanse and tag the lines JSON structure
             cleanse_and_tag_json_structure(lines)
 
