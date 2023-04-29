@@ -8,6 +8,9 @@ def corrilate_table_data(table_elements, table_data):
     # Initialize an empty dictionary to store tables
     tables = {}
     
+    if not table_elements or not table_data:
+        return None
+
     # Iterate through each table in table_data
     tbl_idx = 0
     while tbl_idx < len(table_data):
@@ -69,7 +72,7 @@ def corrilate_table_data(table_elements, table_data):
             row_idx += 1
 
         # If there are no more elements with 'table': 0, increment the table index
-        if not any(element.get('table') == 0 for element in table_elements):
+        if all(element.get('table') != 0 for element in table_elements):
             tbl_idx += 1
     
     # Sort the elements in each table by their row and column values

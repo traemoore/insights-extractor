@@ -12,7 +12,7 @@ dependencies = [
   "ghostscript == 0.7; python_version >= '3.6'"
 ]
 name = "insights-extractor"
-version = "0.1.4"
+version = "0.1.5"
 authors = [
   { name="Trae Moore", email="trae.dev@gmail.com" },
 ]

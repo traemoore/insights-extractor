@@ -13,7 +13,7 @@ from ..utils.json_utils import cleanse_and_tag_json_structure
 from ..exceptions import DocumentProcessingError, PageProcessingError
 
 
-def process_document(file: str, exclude_pages=None, use_multithreading=False,  split_pages_output_dir=None, delete_split_pages=True):
+def process_document(file: str, settings: dict = None, use_multithreading: bool = False, split_pages_output_dir: str = None, delete_split_pages: bool = True):
     """
     Process a document by splitting it into pages and processing each page individually.
 
@@ -32,9 +32,12 @@ def process_document(file: str, exclude_pages=None, use_multithreading=False,  s
 
     Raises: DocumentProcessingError if an error occurs while processing the document.
     """
+
+    config.update(settings)
+
     result = {
         'document_name': os.path.basename(file),
-        'excluded_pages': exclude_pages if exclude_pages is not None else None,
+        'excluded_pages': config.exclude_pages if config.exclude_pages is not None else None,
         'pages': []
     }
 
@@ -51,7 +54,7 @@ def process_document(file: str, exclude_pages=None, use_multithreading=False,  s
         with ThreadPoolExecutor() as executor:
             futures = []
             for i, file_path in enumerate(files):
-                if exclude_pages is None or i+1 not in exclude_pages:
+                if config.exclude_pages is None or i+1 not in config.exclude_pages:
                     futures.append(executor.submit(
                         process_page, file_path, i+1))
 
@@ -64,7 +67,7 @@ def process_document(file: str, exclude_pages=None, use_multithreading=False,  s
     else:
         # If multi-threading is disabled, process each page sequentially in the main thread
         for i, file_path in enumerate(files):
-            if exclude_pages is None or i+1 not in exclude_pages:
+            if config.exclude_pages is None or i+1 not in config.exclude_pages:
                 result['pages'].append(process_page(file_path, i+1))
 
     # Delete the extracted pages if the delete_extracted_pages flag is set
