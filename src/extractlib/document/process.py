@@ -140,6 +140,12 @@ def process_page(file_path, index):
 
             return data
         except Exception as e:
+            data = {
+                'page': index,
+                'error': str(e)
+            }
+            print(f'Error processing page {index} of {file_path}:\n {e}')
             # Raise an error if an exception occurs while processing the page
-            raise PageProcessingError(
-                f'Error processing page {index} of {file_path}: {e}')
+            # raise PageProcessingError(
+            #     f'Error processing page {index} of {file_path}: {e}')
+            return data
