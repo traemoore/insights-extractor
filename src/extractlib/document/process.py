@@ -13,6 +13,13 @@ from ..utils.json_utils import cleanse_and_tag_json_structure
 from ..exceptions import DocumentProcessingError, PageProcessingError
 
 
+# configure standardized logging
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+
 def process_document(file: str, settings: dict = None, use_multithreading: bool = False, split_pages_output_dir: str = None, delete_split_pages: bool = True):
     """
     Process a document by splitting it into pages and processing each page individually.
@@ -96,13 +103,15 @@ def process_page(file_path, index):
     data = {}
 
     # Print a message to the console indicating that the processing has started
-    print(f'starting {file_path}')
+    if config.std_out_logging:
+        logger.info(f'starting {file_path}')
 
     file_ext = os.path.splitext(file_path)[1].lower()
 
     # Check if the file type is supported
     if file_ext in config.supported_file_types:
-        print(f'processing {file_path}')
+        if config.std_out_logging:
+            logger.info(f'processing {file_path}')
 
         # Create the full file path
         #file_path = path if not os.path.isabs(path) else os.path.join(os.path.dirname(path), path)
@@ -147,7 +156,9 @@ def process_page(file_path, index):
                 'page': index,
                 'error': str(e)
             }
-            print(f'Error processing page {index} of {file_path}:\n {e}')
+            
+            if config.std_out_logging:
+                logger.error(f'Error processing page {index} of {file_path}:\n {e}')
             # Raise an error if an exception occurs while processing the page
             # raise PageProcessingError(
             #     f'Error processing page {index} of {file_path}: {e}')
